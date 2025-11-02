@@ -8,14 +8,24 @@ import {
   Stack,
   useMantineTheme,
 } from "@mantine/core";
+import styles from "./expense.module.css";
+import { ExpenseType, getExpenseTypeBadgeData } from "../services/expenseType";
 
 export interface ExpenseCardProps {
   name: string;
   description: string;
   amount: number;
+  className: string;
+  expenseType: ExpenseType;
 }
 
-export function ExpenseCard({ name, description, amount }: ExpenseCardProps) {
+export function ExpenseCard({
+  name,
+  description,
+  amount,
+  className,
+  expenseType,
+}: ExpenseCardProps) {
   const theme = useMantineTheme();
 
   const amountColor = theme.colors.red[7];
@@ -31,11 +41,15 @@ export function ExpenseCard({ name, description, amount }: ExpenseCardProps) {
       shadow="sm"
       padding="lg"
       radius="md"
+      tabIndex={0}
+      className={`${styles.card} ${className ?? ""}`.trim()}
       withBorder
       style={{
         maxWidth: 340,
         borderColor: cardBorderColor,
-        boxShadow: theme.shadows.sm,
+        // expose Mantine shadow values as CSS custom properties so the CSS module can use them
+        ["--mantine-shadow" as any]: theme.shadows.sm,
+        ["--mantine-shadow-hover" as any]: theme.shadows.md,
       }}
     >
       <Stack justify="space-between" h="100%">
@@ -43,8 +57,13 @@ export function ExpenseCard({ name, description, amount }: ExpenseCardProps) {
           <Text fw={700} size="lg">
             {name}
           </Text>
-          <Badge color="red" variant="light" radius="sm">
-            Despesa
+          {/* badge label and color come from the ExpenseType service */}
+          <Badge
+            color={getExpenseTypeBadgeData(expenseType).color}
+            variant="light"
+            radius="sm"
+          >
+            {getExpenseTypeBadgeData(expenseType).label}
           </Badge>
         </Group>
 
