@@ -1,0 +1,68 @@
+/* global.css (PostCSS-friendly)
+	 Uso de custom properties e nesting (PostCSS) para tornar o CSS
+	 mais abstrato e mais fácil de estender.
+
+	 Objetivo: garantir que a tag <main> ocupe a viewport inteira
+	 independentemente do conteúdo, com fallback compatível.
+*/
+
+:root {
+  /* Altura padrão da página (fallback) */
+  --page-height: 100vh;
+  /* Unidade segura para navegadores que suportam svh/dvh (opcional) */
+  --page-safe-height: 100svh;
+
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* Remover espaçamentos padrão que afetam o layout de altura */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Next.js: garantir que o contêiner raiz possa crescer até 100% */
+#__next {
+  min-height: 100%;
+}
+
+/* Regras para <main> usando sintaxe aninhada (PostCSS)
+	 - Preferir unidades seguras quando suportadas
+	 - Usar min-height para permitir crescimento se houver conteúdo extra
+*/
+main {
+  /* fallback */
+  min-height: var(--page-height);
+  /* prefer modern svh when supported */
+  @supports (height: 100svh) {
+    min-height: var(--page-safe-height);
+  }
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  /* Helpers via nesting */
+  &.center {
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Evita que filhos colapsem se forem elementos com flex-default */
+  > * {
+    flex-shrink: 0;
+  }
+}
+
+/* Nota: se quiser suportar mobile dynamic VH com total precisão,
+	 podemos adicionar um pequeno script que define --page-height com
+	 window.innerHeight em tempo de execução; diga se quer este fallback JS.
+*/
