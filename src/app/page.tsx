@@ -11,9 +11,8 @@ import {
   ActionIcon,
 } from "@mantine/core";
 import ExpenseFormModal from "@/components/expenseFormModal";
-import { IconSun, IconMoon } from "@tabler/icons-react";
 
-const INITIAL_DESPESAS: ExpenseCardProps[] = [
+const INITIAL_EXPENSES: ExpenseCardProps[] = [
   {
     name: "Aluguel do Apartamento",
     description: "Pagamento mensal do aluguel de Novembro.",
@@ -38,8 +37,8 @@ const INITIAL_DESPESAS: ExpenseCardProps[] = [
 ];
 
 export default function HomePage() {
-  const [despesas, setDespesas] =
-    useState<ExpenseCardProps[]>(INITIAL_DESPESAS);
+  const [expenses, setExpenses] =
+    useState<ExpenseCardProps[]>(INITIAL_EXPENSES);
   const [opened, setOpened] = useState(false);
 
   function handleCreate(data: {
@@ -48,11 +47,10 @@ export default function HomePage() {
     amount: number;
     expenseType: ExpenseType;
   }) {
-    const newExp: ExpenseCardProps = {
+    const newExpense: ExpenseCardProps = {
       ...data,
-      className: "",
     };
-    setDespesas((s) => [newExp, ...s]);
+    setExpenses((expenses) => [newExpense, ...expenses]);
   }
 
   return (
@@ -73,7 +71,7 @@ export default function HomePage() {
       </div>
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="xl">
-        {despesas.map((exp, index) => (
+        {expenses.map((exp, index) => (
           <ExpenseCard key={index} {...exp} />
         ))}
       </SimpleGrid>
