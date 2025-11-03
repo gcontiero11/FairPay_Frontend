@@ -15,8 +15,8 @@ export interface ExpenseCardProps {
   name: string;
   description: string;
   amount: number;
-  className: string;
   expenseType: ExpenseType;
+  className?: string;
 }
 
 export function ExpenseCard({

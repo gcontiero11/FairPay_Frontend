@@ -6,7 +6,6 @@ import {
   MantineProvider,
   mantineHtmlProps,
 } from "@mantine/core";
-import { appTheme } from "../theme/theme";
 
 export const metadata = {
   title: "My Mantine app",
@@ -24,7 +23,7 @@ export default function RootLayout({
         <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body>
-        <MantineProvider theme={appTheme}>{children}</MantineProvider>
+        <MantineProvider>{children}</MantineProvider>
       </body>
     </html>
   );
