@@ -1,10 +1,8 @@
+"use client";
+
 import "./global.css";
 import { Toaster } from "sonner";
-
-export const metadata = {
-  title: "FairPay - Gestão de Despesas",
-  description: "Gerencie suas despesas de forma justa e eficiente",
-};
+import { SplitGroupProvider } from "@/contexts/SplitGroupContext";
 
 export default function RootLayout({
   children,
@@ -14,8 +12,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        {children}
-        <Toaster position="top-right" richColors />
+        <SplitGroupProvider>
+          {children}
+          <Toaster position="top-right" richColors />
+        </SplitGroupProvider>
       </body>
     </html>
   );
