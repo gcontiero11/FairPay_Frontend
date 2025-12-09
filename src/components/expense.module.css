@@ -6,21 +6,17 @@
   will-change: transform, box-shadow;
   cursor: default;
   backface-visibility: hidden;
-
-  /* default shadow: prefer Mantine-provided value via CSS variable, fallback to a subtle shadow */
-  box-shadow: var(--mantine-shadow, 0 1px 3px rgba(0, 0, 0, 0.08));
 }
 
 /* scale slightly on mouse over and increase shadow */
 .card:hover {
   transform: scale(1.04);
-  /* prefer Mantine hover shadow if provided */
-  box-shadow: var(--mantine-shadow-hover, 0 12px 36px rgba(0, 0, 0, 0.12));
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
 }
 
 /* keyboard focus should also trigger the effect for accessibility */
 .card:focus-visible {
   outline: none;
   transform: scale(1.04);
-  box-shadow: var(--mantine-shadow-hover, 0 10px 30px rgba(0, 0, 0, 0.14));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
 }

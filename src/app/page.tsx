@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { ExpenseCard, ExpenseCardProps } from "@/components/expense";
 import { ExpenseType } from "@/services/expenseType";
-import {
-  Container,
-  Title,
-  SimpleGrid,
-  Button,
-  ActionIcon,
-} from "@mantine/core";
+import { Button } from "@/components/ui/button";
 import ExpenseFormModal from "@/components/expenseFormModal";
 
 const INITIAL_EXPENSES: ExpenseCardProps[] = [
@@ -54,33 +48,26 @@ export default function HomePage() {
   }
 
   return (
-    <Container size="lg" py="xl">
-      <Title order={1} mb="xl" ta="center">
-        📈 Resumo das Despesas
-      </Title>
+    <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <h1 className="text-4xl font-bold text-center mb-8">
+        Resumo das Despesas
+      </h1>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          gap: 8,
-          marginBottom: 16,
-        }}
-      >
+      <div className="flex justify-end gap-2 mb-6">
         <Button onClick={() => setOpened(true)}>Adicionar Despesa</Button>
       </div>
 
-      <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {expenses.map((exp, index) => (
           <ExpenseCard key={index} {...exp} />
         ))}
-      </SimpleGrid>
+      </div>
 
       <ExpenseFormModal
         opened={opened}
         onClose={() => setOpened(false)}
         onCreate={handleCreate}
       />
-    </Container>
+    </div>
   );
 }

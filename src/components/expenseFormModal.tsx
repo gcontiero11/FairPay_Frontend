@@ -2,15 +2,25 @@
 
 import { useEffect, useState } from "react";
 import {
-  Modal,
-  Button,
-  TextInput,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
   Select,
-  NumberInput,
-  Textarea,
-  Stack,
-} from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
 import { ExpenseType } from "../services/expenseType";
 
 type Props = {
@@ -27,124 +37,138 @@ type Props = {
 export default function ExpenseFormModal({ opened, onClose, onCreate }: Props) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState<number | undefined>(undefined);
-  const [type, setType] = useState<ExpenseType | null>(ExpenseType.OTHER);
+  const [amount, setAmount] = useState<string>("");
+  const [type, setType] = useState<ExpenseType>(ExpenseType.OTHER);
   const [nameTouched, setNameTouched] = useState(false);
   const [amountTouched, setAmountTouched] = useState(false);
-  const [typeTouched, setTypeTouched] = useState(false);
 
   useEffect(() => {
     if (opened) {
       setNameTouched(false);
       setAmountTouched(false);
-      setTypeTouched(false);
     }
   }, [opened]);
 
   function handleCreate() {
-    if (!name || !type || !amount) {
-      showNotification({
-        title: "Erro",
-        message: "Preencha todos os campos obrigatórios.",
-        color: "red",
+    const amountNum = parseFloat(amount);
+
+    if (!name || !type || !amount || isNaN(amountNum)) {
+      toast.error("Erro", {
+        description: "Preencha todos os campos obrigatórios.",
       });
       return;
     }
 
-    onCreate({ name, description, amount, expenseType: type });
-    showNotification({
-      title: "Sucesso",
-      message: "Despesa criada com sucesso.",
-      color: "green",
+    onCreate({ name, description, amount: amountNum, expenseType: type });
+    toast.success("Sucesso", {
+      description: "Despesa criada com sucesso.",
     });
 
     // reset
     setName("");
     setDescription("");
-    setAmount(undefined);
+    setAmount("");
     setType(ExpenseType.OTHER);
     onClose();
   }
 
   return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title="Criar nova despesa"
-      centered
-    >
-      <Stack>
-        <TextInput
-          label="Nome"
-          placeholder="Ex.: Almoço"
-          value={name}
-          onChange={(e) => setName(e.currentTarget.value)}
-          onBlur={() => setNameTouched(true)}
-          required
-          error={nameTouched && !name ? "Campo obrigatório" : undefined}
-        />
+    <Dialog open={opened} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Criar nova despesa</DialogTitle>
+          <DialogDescription>
+            Preencha os dados da despesa abaixo.
+          </DialogDescription>
+        </DialogHeader>
 
-        <Select
-          label="Tipo"
-          placeholder="Selecione o tipo"
-          value={type ?? undefined}
-          onChange={(val) => setType(val as ExpenseType)}
-          onBlur={() => setTypeTouched(true)}
-          data={[
-            { value: ExpenseType.FOOD, label: "Alimentação" },
-            { value: ExpenseType.TRANSPORT, label: "Transporte" },
-            { value: ExpenseType.ACCOMMODATION, label: "Acomodação" },
-            { value: ExpenseType.ENTERTAINMENT, label: "Entretenimento" },
-            { value: ExpenseType.UTILITIES, label: "Contas" },
-            { value: ExpenseType.GROCERIES, label: "Supermercado" },
-            { value: ExpenseType.OTHER, label: "Outro" },
-          ]}
-          required
-          error={typeTouched && !type ? "Campo obrigatório" : undefined}
-        />
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="name">
+              Nome <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="name"
+              placeholder="Ex.: Almoço"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onBlur={() => setNameTouched(true)}
+            />
+            {nameTouched && !name && (
+              <p className="text-sm text-red-500">Campo obrigatório</p>
+            )}
+          </div>
 
-        <NumberInput
-          label="Valor"
-          placeholder="0,00"
-          value={amount}
-          onChange={(val: number | string | undefined) =>
-            setAmount(
-              typeof val === "number" ? val : val ? Number(val) : undefined
-            )
-          }
-          min={0}
-          step={0.5}
-          required
-          onBlur={() => setAmountTouched(true)}
-          error={amountTouched && !amount ? "Campo obrigatório" : undefined}
-        />
+          <div className="grid gap-2">
+            <Label htmlFor="type">
+              Tipo <span className="text-red-500">*</span>
+            </Label>
+            <Select
+              value={type}
+              onValueChange={(val) => setType(val as ExpenseType)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ExpenseType.FOOD}>Alimentação</SelectItem>
+                <SelectItem value={ExpenseType.TRANSPORT}>
+                  Transporte
+                </SelectItem>
+                <SelectItem value={ExpenseType.ACCOMMODATION}>
+                  Acomodação
+                </SelectItem>
+                <SelectItem value={ExpenseType.ENTERTAINMENT}>
+                  Entretenimento
+                </SelectItem>
+                <SelectItem value={ExpenseType.UTILITIES}>Contas</SelectItem>
+                <SelectItem value={ExpenseType.GROCERIES}>
+                  Supermercado
+                </SelectItem>
+                <SelectItem value={ExpenseType.OTHER}>Outro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <Textarea
-          label="Descrição"
-          placeholder="Descrição opcional"
-          value={description}
-          onChange={(e) => setDescription(e.currentTarget.value)}
-        />
+          <div className="grid gap-2">
+            <Label htmlFor="amount">
+              Valor <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="amount"
+              type="number"
+              placeholder="0,00"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              onBlur={() => setAmountTouched(true)}
+              min={0}
+              step={0.01}
+            />
+            {amountTouched && !amount && (
+              <p className="text-sm text-red-500">Campo obrigatório</p>
+            )}
+          </div>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: 16,
-          }}
-        >
-          <Button color="red" variant="light" onClick={onClose}>
+          <div className="grid gap-2">
+            <Label htmlFor="description">Descrição</Label>
+            <Textarea
+              id="description"
+              placeholder="Descrição opcional"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <DialogFooter className="flex gap-2">
+          <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button
-            color="green"
-            onClick={handleCreate}
-            disabled={!name || !amount || !type}
-          >
+          <Button onClick={handleCreate} disabled={!name || !amount || !type}>
             Criar
           </Button>
-        </div>
-      </Stack>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

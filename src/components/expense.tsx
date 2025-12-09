@@ -2,12 +2,12 @@
 
 import {
   Card,
-  Text,
-  Group,
-  Badge,
-  Stack,
-  useMantineTheme,
-} from "@mantine/core";
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import styles from "./expense.module.css";
 import { ExpenseType, getExpenseTypeBadgeData } from "../services/expenseType";
 
@@ -26,67 +26,32 @@ export function ExpenseCard({
   className,
   expenseType,
 }: ExpenseCardProps) {
-  const theme = useMantineTheme();
-
-  const amountColor = theme.colors.red[7];
-  const cardBorderColor = theme.colors.gray[3];
-
   const formattedAmount = new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
   }).format(amount);
 
-  return (
-    <Card
-      shadow="sm"
-      padding="lg"
-      radius="md"
-      tabIndex={0}
-      className={`${styles.card} ${className ?? ""}`.trim()}
-      withBorder
-      style={{
-        maxWidth: 340,
-        borderColor: cardBorderColor,
-        // expose Mantine shadow values as CSS custom properties so the CSS module can use them
-        ["--mantine-shadow" as any]: theme.shadows.sm,
-        ["--mantine-shadow-hover" as any]: theme.shadows.md,
-      }}
-    >
-      <Stack justify="space-between" h="100%">
-        <Group justify="space-between" mb="xs">
-          <Text fw={700} size="lg">
-            {name}
-          </Text>
-          {/* badge label and color come from the ExpenseType service */}
-          <Badge
-            color={getExpenseTypeBadgeData(expenseType).color}
-            variant="light"
-            radius="sm"
-          >
-            {getExpenseTypeBadgeData(expenseType).label}
-          </Badge>
-        </Group>
+  const badgeData = getExpenseTypeBadgeData(expenseType);
 
-        <Text
-          size="sm"
-          c="dimmed"
-          style={{ flexGrow: 1, marginBottom: theme.spacing.md }}
-        >
-          {description}
-        </Text>
-        <Group justify="flex-end">
-          <Text
-            size="xl"
-            fw={700}
-            style={{
-              color: amountColor,
-              textShadow: "0 0 1px rgba(0, 0, 0, 0.1)",
-            }}
+  return (
+    <Card className={`${styles.card} ${className ?? ""}`.trim()} tabIndex={0}>
+      <CardHeader>
+        <div className="flex justify-between items-start gap-2">
+          <CardTitle className="text-lg">{name}</CardTitle>
+          <Badge
+            variant="secondary"
+            className={`bg-${badgeData.color}-100 text-${badgeData.color}-800 hover:bg-${badgeData.color}-100`}
           >
-            {formattedAmount}
-          </Text>
-        </Group>
-      </Stack>
+            {badgeData.label}
+          </Badge>
+        </div>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex justify-end">
+          <p className="text-2xl font-bold text-red-600">{formattedAmount}</p>
+        </div>
+      </CardContent>
     </Card>
   );
 }

@@ -1,15 +1,9 @@
-import "@mantine/core/styles.layer.css";
 import "./global.css";
-
-import {
-  ColorSchemeScript,
-  MantineProvider,
-  mantineHtmlProps,
-} from "@mantine/core";
+import { Toaster } from "sonner";
 
 export const metadata = {
-  title: "My Mantine app",
-  description: "I have followed setup instructions carefully",
+  title: "FairPay - Gestão de Despesas",
+  description: "Gerencie suas despesas de forma justa e eficiente",
 };
 
 export default function RootLayout({
@@ -18,12 +12,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" {...mantineHtmlProps}>
-      <head>
-        <ColorSchemeScript defaultColorScheme="auto" />
-      </head>
+    <html lang="pt-BR">
       <body>
-        <MantineProvider>{children}</MantineProvider>
+        {children}
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );
