@@ -8,7 +8,7 @@ export default function HomePage() {
       <h1 className="text-5xl font-bold text-center mb-8">
         Crie seu grupo FairPay
       </h1>
-      <Link href="/split-group/create">
+      <Link href="/split-group">
         <Button
           size="lg"
           className="text-lg px-12 py-6 group transition-all hover:scale-105"

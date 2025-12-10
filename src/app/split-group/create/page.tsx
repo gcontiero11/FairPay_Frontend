@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 export default function CreateSplitGroupPage() {
   const router = useRouter();
-  const { setSplitGroup } = useSplitGroup();
+  const { addSplitGroup } = useSplitGroup();
   const [groupName, setGroupName] = useState("");
   const [maxPeople, setMaxPeople] = useState("");
   const [isDateRange, setIsDateRange] = useState(false);
@@ -44,7 +44,7 @@ export default function CreateSplitGroupPage() {
       return;
     }
 
-    setSplitGroup({
+    const groupId = addSplitGroup({
       groupName,
       maxPeople: parseInt(maxPeople),
       date: {
@@ -60,9 +60,8 @@ export default function CreateSplitGroupPage() {
       description: "Grupo criado com sucesso!",
     });
 
-    router.push("/split-group");
+    router.push(`/split-group`);
   };
-
   return (
     <div className="min-h-screen px-4 py-8">
       {/* Botão voltar */}

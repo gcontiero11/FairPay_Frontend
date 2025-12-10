@@ -11,6 +11,7 @@ export interface Expense {
 }
 
 export interface SplitGroup {
+  id: string;
   groupName: string;
   maxPeople: number;
   date: {
@@ -20,13 +21,15 @@ export interface SplitGroup {
     end?: string;
   };
   expenses: Expense[];
+  createdAt: string;
 }
 
 interface SplitGroupContextType {
-  splitGroup: SplitGroup | null;
-  setSplitGroup: (group: SplitGroup) => void;
-  addExpense: (expense: Expense) => void;
-  clearGroup: () => void;
+  splitGroups: SplitGroup[];
+  addSplitGroup: (group: Omit<SplitGroup, "id" | "createdAt">) => string;
+  getSplitGroupById: (id: string) => SplitGroup | undefined;
+  addExpenseToGroup: (groupId: string, expense: Expense) => void;
+  deleteSplitGroup: (id: string) => void;
 }
 
 const SplitGroupContext = createContext<SplitGroupContextType | undefined>(
@@ -34,27 +37,45 @@ const SplitGroupContext = createContext<SplitGroupContextType | undefined>(
 );
 
 export function SplitGroupProvider({ children }: { children: ReactNode }) {
-  const [splitGroup, setSplitGroupState] = useState<SplitGroup | null>(null);
+  const [splitGroups, setSplitGroups] = useState<SplitGroup[]>([]);
 
-  const setSplitGroup = (group: SplitGroup) => {
-    setSplitGroupState(group);
+  const addSplitGroup = (group: Omit<SplitGroup, "id" | "createdAt">) => {
+    const newGroup: SplitGroup = {
+      ...group,
+      id: Math.random().toString(36).substring(2, 11),
+      createdAt: new Date().toISOString(),
+    };
+    setSplitGroups((prev) => [...prev, newGroup]);
+    return newGroup.id;
   };
 
-  const addExpense = (expense: Expense) => {
-    if (!splitGroup) return;
-    setSplitGroupState({
-      ...splitGroup,
-      expenses: [expense, ...splitGroup.expenses],
-    });
+  const getSplitGroupById = (id: string) => {
+    return splitGroups.find((group) => group.id === id);
   };
 
-  const clearGroup = () => {
-    setSplitGroupState(null);
+  const addExpenseToGroup = (groupId: string, expense: Expense) => {
+    setSplitGroups((prev) =>
+      prev.map((group) =>
+        group.id === groupId
+          ? { ...group, expenses: [expense, ...group.expenses] }
+          : group
+      )
+    );
+  };
+
+  const deleteSplitGroup = (id: string) => {
+    setSplitGroups((prev) => prev.filter((group) => group.id !== id));
   };
 
   return (
     <SplitGroupContext.Provider
-      value={{ splitGroup, setSplitGroup, addExpense, clearGroup }}
+      value={{
+        splitGroups,
+        addSplitGroup,
+        getSplitGroupById,
+        addExpenseToGroup,
+        deleteSplitGroup,
+      }}
     >
       {children}
     </SplitGroupContext.Provider>
